@@ -12,9 +12,10 @@ type FileCopyJob struct {
 }
 
 type FileInfoExtended struct {
-	FsFileInfo fs.FileInfo `json:"fsfileinfo"`
-	path       string      `json:"path"`
-	FileExists bool        `json:"files_exists"`
+	FsFileInfo  fs.FileInfo `json:"fsfileinfo"`
+	path        string      `json:"path"`
+	IsDirectory bool        `json:"isDirectory"`
+	FileExists  bool        `json:"files_exists"`
 }
 
 type ColorizedSrcPath interface {
@@ -50,6 +51,7 @@ func main() {
 
 	srcfileinfo.GetFileInfo()
 	dstfileinfo.GetFileInfo()
+
 	filecopyjob.SourceFile = srcfileinfo
 	filecopyjob.DestinationFile = dstfileinfo
 

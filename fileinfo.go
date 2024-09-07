@@ -49,6 +49,7 @@ func (f *FileInfoExtended) GetFileInfo() error {
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			f.FileExists = false
+			f.IsDirectory = false
 			fmt.Printf("File: %s does not exist\n", f.path)
 		} else {
 			fmt.Printf("Error when trying to Stat source file: %s\n", f.path)
@@ -59,6 +60,7 @@ func (f *FileInfoExtended) GetFileInfo() error {
 	// If no error, the file exists, so set the fields
 	f.FileExists = true
 	f.FsFileInfo = fileinfo
+	f.IsDirectory = f.FsFileInfo.IsDir()
 
 	return nil
 }
