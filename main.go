@@ -14,72 +14,31 @@ type FileCopyJob struct {
 
 type FileInfoExtended struct {
 	FsFileInfo fs.FileInfo `json:"fsfileinfo"`
+	path       string      `json:"path"`
 }
 
-type SizeInKb interface {
-	GetSizeInKB() int64
+type ColorizedSrcPath interface {
+	PrettyPrintSrc() string
 }
 
-type SizeInMb interface {
-	GetSizeInMB() int64
+type ColorizedDstPath interface {
+	PrettyPrintDst() string
 }
 
-type PercentCopiedString interface {
-	GetCopyProgressPercentStr() string
+func (f *FileCopyJob) PrettyPrintSrc() string {
+	coloredsource := fmt.Sprintf("\x1b[%dm%s\x1b[0m", 96, f.SourceFile.path)
+	return coloredsource
 }
 
-type PercentCopiedInt64 interface {
-	GetCopyProgressPercentInt64() int64
-}
-
-func (f *FileInfoExtended) GetSizeInKB() int64 {
-	flength := f.FsFileInfo.Size()
-	kbsize := flength / 1024
-
-	return kbsize
-}
-
-func (f *FileInfoExtended) GetSizeInMB() int64 {
-	flength := f.FsFileInfo.Size()
-	mbsize := flength / 1048576
-
-	return mbsize
-}
-
-func (f *FileCopyJob) GetCopyProgressPercentStr() string {
-	dstlen := f.DestinationFile.FsFileInfo.Size()
-	srclength := f.SourceFile.FsFileInfo.Size()
-
-	cursizedec := dstlen / srclength
-	cursize := cursizedec * 100
-	cursizestr := fmt.Sprint(cursize, "%")
-
-	fmt.Printf("%s Percent Copied", cursizestr)
-
-	return cursizestr
-
-}
-
-func (f *FileCopyJob) GetCopyProgressPercentInt64() int64 {
-	dstlen := f.DestinationFile.FsFileInfo.Size()
-	srclength := f.SourceFile.FsFileInfo.Size()
-
-	cursizedec := dstlen / srclength
-	cursize := cursizedec * 100
-
-	fmt.Printf("%v Percent Copied", cursize)
-
-	return cursize
-
+func (f *FileCopyJob) PrettyPrintDst() string {
+	colordestination := fmt.Sprintf("\x1b[%dm%s\x1b[0m", 92, f.DestinationFile.path)
+	return colordestination
 }
 
 func main() {
 	source := flag.String("source", ".", "Source file or directory to copy")
 	destination := flag.String("destination", "C:\temp", "Destination to Copy to.")
 	flag.Parse()
-
-	coloredsource := fmt.Sprintf("\x1b[%dm%s\x1b[0m", 96, *source)
-	coloreddestination := fmt.Sprintf("\x1b[%dm%s\x1b[0m", 92, *destination)
 
 	src, err := os.Stat(*source)
 	if err != nil {
@@ -90,31 +49,34 @@ func main() {
 	if err != nil {
 		fmt.Errorf("Error when trying to Stat source file %s\n", dst)
 	}
+
 	var srcfileinfo FileInfoExtended
 	var dstfileinfo FileInfoExtended
 	var filecopyjob FileCopyJob
 
+	srcfileinfo.path = *source
+	dstfileinfo.path = *destination
 	srcfileinfo.FsFileInfo = src
 	dstfileinfo.FsFileInfo = dst
 	filecopyjob.SourceFile = srcfileinfo
 	filecopyjob.DestinationFile = dstfileinfo
 
-	sizemb := filecopyjob.SourceFile.GetSizeInKB()
+	sizehumanread := filecopyjob.SourceFile.GetSizeInMB()
 	isSrcDir := filecopyjob.SourceFile.FsFileInfo.IsDir()
 	isDstDir := filecopyjob.DestinationFile.FsFileInfo.IsDir()
 
-	fmt.Printf("sizemb of %s is %v\n", coloredsource, sizemb)
+	fmt.Printf("sizemb of %s is %v\n", filecopyjob.PrettyPrintSrc(), sizehumanread)
 
 	if isSrcDir {
-		fmt.Printf("The source file specified: %s is a Directory\n", coloredsource)
+		fmt.Printf("The source file specified: %s is a Directory\n", filecopyjob.PrettyPrintSrc())
 	} else {
-		fmt.Printf("The source file specified: %s is not a Directory.\n", coloredsource)
+		fmt.Printf("The source file specified: %s is not a Directory.\n", filecopyjob.PrettyPrintSrc())
 	}
 
 	if isDstDir {
-		fmt.Printf("The destination file specified: %s is a Directory\n", coloreddestination)
+		fmt.Printf("The destination file specified: %s is a Directory\n", filecopyjob.PrettyPrintDst())
 	} else {
-		fmt.Printf("The destination file specified: %s is not a Directory.\n", coloreddestination)
+		fmt.Printf("The destination file specified: %s is not a Directory.\n", filecopyjob.PrettyPrintDst())
 	}
 
 }
