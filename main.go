@@ -63,7 +63,6 @@ func main() {
 
 	sizehumanread := filecopyjob.SourceFile.GetSizeInMB()
 	isSrcDir := filecopyjob.SourceFile.FsFileInfo.IsDir()
-	isDstDir := filecopyjob.DestinationFile.FsFileInfo.IsDir()
 
 	fmt.Printf("sizemb of %s is %v\n", filecopyjob.PrettyPrintSrc(), sizehumanread)
 
@@ -73,10 +72,6 @@ func main() {
 		fmt.Printf("The source file specified: %s is not a Directory.\n", filecopyjob.PrettyPrintSrc())
 	}
 
-	if isDstDir {
-		fmt.Printf("The destination file specified: %s is a Directory\n", filecopyjob.PrettyPrintDst())
-	} else {
-		fmt.Printf("The destination file specified: %s is not a Directory.\n", filecopyjob.PrettyPrintDst())
-	}
+	filecopyjob.CopyFile()
 
 }

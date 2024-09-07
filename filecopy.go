@@ -46,14 +46,17 @@ func (f *FileCopyJob) GetCopyProgressPercentInt64() int64 {
 }
 
 func (f *FileCopyJob) CopyFile() error {
+	fmt.Printf("Starting File Copy Job src: %s\ndst: %s\nsize_kb: %s", f.SourceFile.path, f.DestinationFile.path, f.SourceFile.GetSizeInKB())
 	src, err := os.Open(f.SourceFile.path)
 	if err != nil {
+		fmt.Printf("Error Opening source file %s\n", f.PrettyPrintSrc())
 		return err
 	}
 	defer src.Close()
 
 	newfile, err := os.Create(f.DestinationFile.path)
 	if err != nil {
+		fmt.Printf("Error Creating new destination file: %s \n", f.PrettyPrintDst())
 		return err
 	}
 
@@ -65,6 +68,9 @@ func (f *FileCopyJob) CopyFile() error {
 	}()
 
 	_, err = io.Copy(newfile, src)
+	if err != nil {
+		fmt.Printf("The copy of %s to %s failed\n", f.PrettyPrintSrc(), f.PrettyPrintDst())
+	}
 
 	return err
 }
