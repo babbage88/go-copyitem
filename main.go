@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"io/fs"
-	"os"
 )
 
 type FileCopyJob struct {
@@ -15,6 +14,7 @@ type FileCopyJob struct {
 type FileInfoExtended struct {
 	FsFileInfo fs.FileInfo `json:"fsfileinfo"`
 	path       string      `json:"path"`
+	FileExists bool        `json:"files_exists"`
 }
 
 type ColorizedSrcPath interface {
@@ -40,31 +40,26 @@ func main() {
 	destination := flag.String("destination", "C:\temp", "Destination to Copy to.")
 	flag.Parse()
 
-	src, err := os.Stat(*source)
-	if err != nil {
-		fmt.Errorf("Error when trying to Stat source file %s\n", src)
-	}
-
-	dst, err := os.Stat(*destination)
-	if err != nil {
-		fmt.Errorf("Error when trying to Stat source file %s\n", dst)
-	}
-
 	var srcfileinfo FileInfoExtended
 	var dstfileinfo FileInfoExtended
 	var filecopyjob FileCopyJob
 
 	srcfileinfo.path = *source
 	dstfileinfo.path = *destination
-	srcfileinfo.FsFileInfo = src
-	dstfileinfo.FsFileInfo = dst
+	fmt.Printf("Destination Path: %s\n", dstfileinfo.path)
+
+	srcfileinfo.GetFileInfo()
+	dstfileinfo.GetFileInfo()
 	filecopyjob.SourceFile = srcfileinfo
 	filecopyjob.DestinationFile = dstfileinfo
 
 	sizehumanread := filecopyjob.SourceFile.GetSizeInMB()
 	isSrcDir := filecopyjob.SourceFile.FsFileInfo.IsDir()
 
+	dstsize := filecopyjob.DestinationFile.GetSizeInMB()
+
 	fmt.Printf("sizemb of %s is %v\n", filecopyjob.PrettyPrintSrc(), sizehumanread)
+	fmt.Printf("Destination file %s size is %v\n", filecopyjob.PrettyPrintDst(), dstsize)
 
 	if isSrcDir {
 		fmt.Printf("The source file specified: %s is a Directory\n", filecopyjob.PrettyPrintSrc())
@@ -72,6 +67,6 @@ func main() {
 		fmt.Printf("The source file specified: %s is not a Directory.\n", filecopyjob.PrettyPrintSrc())
 	}
 
-	filecopyjob.CopyFile()
+	//filecopyjob.CopyFile()
 
 }
