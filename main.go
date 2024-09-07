@@ -75,10 +75,11 @@ func (f *FileCopyJob) GetCopyProgressPercentInt64() int64 {
 
 func main() {
 	source := flag.String("source", ".", "Source file or directory to copy")
-	destination := flag.String("destination", "C:\tmep", "Destination to Copy to.")
+	destination := flag.String("destination", "C:\temp", "Destination to Copy to.")
 	flag.Parse()
 
-	coloredsource := fmt.Sprintf("\x1b[%dm%s\x1b[0m", 34, *source)
+	coloredsource := fmt.Sprintf("\x1b[%dm%s\x1b[0m", 96, *source)
+	coloreddestination := fmt.Sprintf("\x1b[%dm%s\x1b[0m", 92, *destination)
 
 	src, err := os.Stat(*source)
 	if err != nil {
@@ -100,13 +101,20 @@ func main() {
 
 	sizemb := filecopyjob.SourceFile.GetSizeInKB()
 	isSrcDir := filecopyjob.SourceFile.FsFileInfo.IsDir()
+	isDstDir := filecopyjob.DestinationFile.FsFileInfo.IsDir()
 
 	fmt.Printf("sizemb of %s is %v\n", coloredsource, sizemb)
 
 	if isSrcDir {
 		fmt.Printf("The source file specified: %s is a Directory\n", coloredsource)
 	} else {
-		fmt.Printf("The source file specified: %s is not a Director.\n", coloredsource)
+		fmt.Printf("The source file specified: %s is not a Directory.\n", coloredsource)
+	}
+
+	if isDstDir {
+		fmt.Printf("The destination file specified: %s is a Directory\n", coloreddestination)
+	} else {
+		fmt.Printf("The destination file specified: %s is not a Directory.\n", coloreddestination)
 	}
 
 }
