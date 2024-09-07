@@ -78,16 +78,35 @@ func main() {
 	destination := flag.String("destination", "C:\tmep", "Destination to Copy to.")
 	flag.Parse()
 
-	fmt.Printf("Copying %s to %s", *source, *destination)
+	coloredsource := fmt.Sprintf("\x1b[%dm%s\x1b[0m", 34, *source)
 
 	src, err := os.Stat(*source)
 	if err != nil {
 		fmt.Errorf("Error when trying to Stat source file %s\n", src)
 	}
 
-	srcsize := src.Size()
-	kbsize := srcsize / 1024
+	dst, err := os.Stat(*destination)
+	if err != nil {
+		fmt.Errorf("Error when trying to Stat source file %s\n", dst)
+	}
+	var srcfileinfo FileInfoExtended
+	var dstfileinfo FileInfoExtended
+	var filecopyjob FileCopyJob
 
-	fmt.Printf("Size of source file %s is %v in bytes, or %v in KiloBytes\n", src.Name(), srcsize, kbsize)
+	srcfileinfo.FsFileInfo = src
+	dstfileinfo.FsFileInfo = dst
+	filecopyjob.SourceFile = srcfileinfo
+	filecopyjob.DestinationFile = dstfileinfo
+
+	sizemb := filecopyjob.SourceFile.GetSizeInKB()
+	isSrcDir := filecopyjob.SourceFile.FsFileInfo.IsDir()
+
+	fmt.Printf("sizemb of %s is %v\n", coloredsource, sizemb)
+
+	if isSrcDir {
+		fmt.Printf("The source file specified: %s is a Directory\n", coloredsource)
+	} else {
+		fmt.Printf("The source file specified: %s is not a Director.\n", coloredsource)
+	}
 
 }
