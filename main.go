@@ -3,19 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/fs"
 )
 
 type FileCopyJob struct {
 	SourceFile      FileInfoExtended `json:"sourcefileinfo"`
 	DestinationFile FileInfoExtended `json:"sourcefileinfo"`
-}
-
-type FileInfoExtended struct {
-	FsFileInfo  fs.FileInfo `json:"fsfileinfo"`
-	path        string      `json:"path"`
-	IsDirectory bool        `json:"isDirectory"`
-	FileExists  bool        `json:"files_exists"`
 }
 
 type ColorizedSrcPath interface {
@@ -56,19 +48,11 @@ func main() {
 	filecopyjob.DestinationFile = dstfileinfo
 
 	sizehumanread := filecopyjob.SourceFile.GetSizeInMB()
-	isSrcDir := filecopyjob.SourceFile.FsFileInfo.IsDir()
-
 	dstsize := filecopyjob.DestinationFile.GetSizeInMB()
 
-	fmt.Printf("sizemb of %s is %v\n", filecopyjob.PrettyPrintSrc(), sizehumanread)
-	fmt.Printf("Destination file %s size is %v\n", filecopyjob.PrettyPrintDst(), dstsize)
+	fmt.Printf("sizemb of %s is %.2f\n", filecopyjob.PrettyPrintSrc(), sizehumanread)
+	fmt.Printf("Destination file %s size is %.2f\n", filecopyjob.PrettyPrintDst(), dstsize)
 
-	if isSrcDir {
-		fmt.Printf("The source file specified: %s is a Directory\n", filecopyjob.PrettyPrintSrc())
-	} else {
-		fmt.Printf("The source file specified: %s is not a Directory.\n", filecopyjob.PrettyPrintSrc())
-	}
-
-	//filecopyjob.CopyFile()
+	//filecopyjob.GetCopyProgressPercentStr()
 
 }
