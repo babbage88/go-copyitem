@@ -147,8 +147,17 @@ func (f *FileCopyJob) Start() error {
 	// Second goroutine for status updates
 	go func() {
 		defer wg.Done()
-		time.Sleep(8 * time.Second)
-		fmt.Printf("Test src: %s dst: %s\n", f.PrettyPrintSrc(), f.PrettyPrintDst())
+		ticker := time.NewTicker(2 * time.Second)
+		defer ticker.Stop()
+
+		for {
+			select {
+			case <-boolCompletedChan:
+				return
+			case <-ticker.C:
+				fmt.Printf("%s\n", f.GetCopyProgressPercentStr())
+			}
+		}
 	}()
 
 	// Main thread, for loop to monitor channels for progress and errors
@@ -164,9 +173,9 @@ func (f *FileCopyJob) Start() error {
 			fmt.Printf("Error encountered: %v\n", err)
 			wg.Wait() // Ensure all goroutines are done
 			return err
-		case <-time.After(5 * time.Second):
-			// Periodically print progress
-			fmt.Printf("%s\n", f.GetCopyProgressPercentStr())
+		case <-time.After(15 * time.Second):
+			// Periodically print which files are being copied.
+			fmt.Printf("Test src: %s dst: %s\n", f.PrettyPrintSrc(), f.PrettyPrintDst())
 		}
 	}
 }
