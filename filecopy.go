@@ -66,7 +66,7 @@ func (f *FileCopyJob) GetCopyProgressPercentInt64() int64 {
 }
 
 func (f *FileCopyJob) CopyFile() error {
-	fmt.Printf("Starting File Copy Job src: %s\ndst: %s\nsize_kb: %s\n", f.SourceFile.path, f.DestinationFile.path, f.SourceFile.GetSizeInKB())
+	fmt.Printf("Starting File Copy Job src: %s\ndst: %s\nsize_kb: %s\n", f.SourceFile.path, f.DestinationFile.path, f.SourceFile.PrettyStringSizeKB())
 	src, err := os.Open(f.SourceFile.path)
 	if err != nil {
 		fmt.Printf("Error Opening source file %s\n", f.PrettyPrintSrc())
