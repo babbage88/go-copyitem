@@ -22,14 +22,29 @@ type CopyJobFile interface {
 	GetSizeInGB() float64
 	GetSizeBytes() float64
 	CheckSize() float64
-	PrettyPrintSizeBytes() string
-	PrettyPrintSizeKB() string
-	PrettyPrintSizeMB() string
-	PrettyPrintSizeGB() string
+	PrettyStringSizeBytes() string
+	PrettyStringSizeKB() string
+	PrettyStringSizeMB() string
+	PrettyStringSizeGB() string
 }
 
-func (f *FileCopyJob) PrettyPrintSizeBytes() string {
-	coloredsource := fmt.Sprintf("\x1b[%dm%s\x1b[0m", 96, f.DestinationFile.SizeBytes)
+func (f *FileInfoExtended) PrettyStringSizeBytes() string {
+	coloredsource := fmt.Sprintf("\x1b[%dm%.2f\x1b[0m", 96, f.GetSizeBytes())
+	return coloredsource
+}
+
+func (f *FileInfoExtended) PrettyStringSizeKB() string {
+	coloredsource := fmt.Sprintf("\x1b[%dm%.2f\x1b[0m", 96, f.GetSizeInKB())
+	return coloredsource
+}
+
+func (f *FileInfoExtended) PrettyStringSizeMB() string {
+	coloredsource := fmt.Sprintf("\x1b[%dm%.2f\x1b[0m", 96, f.GetSizeInMB())
+	return coloredsource
+}
+
+func (f *FileInfoExtended) PrettyStringSizeGB() string {
+	coloredsource := fmt.Sprintf("\x1b[%dm%.2f\x1b[0m", 96, f.GetSizeInGB())
 	return coloredsource
 }
 
