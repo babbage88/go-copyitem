@@ -6,16 +6,27 @@ import (
 	"os"
 )
 
-type PercentCopiedString interface {
+type FileCopyJob struct {
+	SourceFile      FileInfoExtended `json:"sourcefileinfo"`
+	DestinationFile FileInfoExtended `json:"sourcefileinfo"`
+}
+
+type IFileCopyJob interface {
 	GetCopyProgressPercentStr() string
-}
-
-type PercentCopiedInt64 interface {
 	GetCopyProgressPercentInt64() int64
+	PrettyPrintSrc() string
+	PrettyPrintDst() string
+	CopyFile() error
 }
 
-type CopyFileSimple interface {
-	CopyFile() error
+func (f *FileCopyJob) PrettyPrintSrc() string {
+	coloredsource := fmt.Sprintf("\x1b[%dm%s\x1b[0m", 96, f.SourceFile.path)
+	return coloredsource
+}
+
+func (f *FileCopyJob) PrettyPrintDst() string {
+	colordestination := fmt.Sprintf("\x1b[%dm%s\x1b[0m", 92, f.DestinationFile.path)
+	return colordestination
 }
 
 func (f *FileCopyJob) GetCopyProgressPercentStr() string {
