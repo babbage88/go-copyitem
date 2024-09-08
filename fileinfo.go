@@ -19,8 +19,18 @@ type CopyJobFile interface {
 	GetFileInfo() error
 	GetSizeInKB() float64
 	GetSizeInMB() float64
+	GetSizeInGB() float64
 	GetSizeBytes() float64
 	CheckSize() float64
+	PrettyPrintSizeBytes() string
+	PrettyPrintSizeKB() string
+	PrettyPrintSizeMB() string
+	PrettyPrintSizeGB() string
+}
+
+func (f *FileCopyJob) PrettyPrintSizeBytes() string {
+	coloredsource := fmt.Sprintf("\x1b[%dm%s\x1b[0m", 96, f.DestinationFile.SizeBytes)
+	return coloredsource
 }
 
 func (f *FileInfoExtended) GetSizeInKB() float64 {
@@ -43,6 +53,17 @@ func (f *FileInfoExtended) GetSizeInMB() float64 {
 	f.SizeBytes = float64(f.FsFileInfo.Size())
 
 	return f.SizeBytes / 1048576
+}
+
+func (f *FileInfoExtended) GetSizeInGB() float64 {
+	if f.FsFileInfo == nil {
+		f.GetFileInfo()
+		return f.SizeBytes / 1048576
+	}
+
+	f.SizeBytes = float64(f.FsFileInfo.Size())
+
+	return f.SizeBytes / 1073741824
 }
 
 func (f *FileInfoExtended) GetFileInfo() error {
@@ -75,14 +96,11 @@ func (f *FileInfoExtended) GetSizeBytes() float64 {
 		return f.SizeBytes
 	}
 
-	f.SizeBytes = float64(f.FsFileInfo.Size())
-
 	return f.SizeBytes
 }
 
 func (f *FileInfoExtended) CheckSizeBytes() float64 {
 	f.GetFileInfo()
-	f.SizeBytes = float64(f.FsFileInfo.Size())
 
 	return f.SizeBytes
 }

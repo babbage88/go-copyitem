@@ -27,9 +27,9 @@ func main() {
 	sizehumanread := filecopyjob.SourceFile.GetSizeInMB()
 	dstsize := filecopyjob.DestinationFile.GetSizeInMB()
 
-	fmt.Printf("sizemb of %s is %.2f\n", filecopyjob.PrettyPrintSrc(), sizehumanread)
+	fmt.Printf("size of %s is %.2f\n", filecopyjob.PrettyPrintSrc(), sizehumanread)
 	fmt.Printf("Destination file %s size is %.2f\n", filecopyjob.PrettyPrintDst(), dstsize)
 
-	//filecopyjob.GetCopyProgressPercentStr()
+	filecopyjob.Start()
 
 }
