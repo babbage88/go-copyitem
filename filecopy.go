@@ -1,12 +1,17 @@
 package main
 
 import (
+	"crypto/sha256"
 	"fmt"
 	"io"
 	"os"
 	"sync"
 	"time"
 )
+
+type Result struct {
+	Error error `json:"error"`
+}
 
 type FileCopyJob struct {
 	SourceFile      FileInfoExtended `json:"sourcefileinfo"`
@@ -24,6 +29,7 @@ type IFileCopyJob interface {
 	PrettyPrintDst() string
 	CopyFile() error
 	Start() error
+	VerifyDstHash() error
 }
 
 func (f *FileCopyJob) PrettyPrintSrc() string {
@@ -131,4 +137,39 @@ func (f *FileCopyJob) Start() error {
 
 	wg.Wait()
 	return nil // temporary return nil to twst
+}
+
+func (f *FileCopyJob) VerifyDstHash() error {
+	src, err := os.Open(f.SourceFile.path)
+
+	if err != nil {
+		fmt.Errorf("Error Operning %s", src)
+	}
+	defer src.Close()
+
+	dst, err := os.Open(f.DestinationFile.path)
+
+	if err != nil {
+		fmt.Errorf("Error Operning %s", dst)
+	}
+	defer src.Close()
+
+	srcHash := sha256.New()
+	if _, err := io.Copy(srcHash, src); err != nil {
+		fmt.Errorf("Error Hashing file %s", src)
+	}
+
+	dstHash := sha256.New()
+	if _, err := io.Copy(dstHash, src); err != nil {
+		fmt.Errorf("Error Hashing file %s", dst)
+	}
+
+	if srcHash != dstHash {
+		retVal := fmt.Errorf("Hashes dot match src: %s dst: %s", src, dst)
+		return retVal
+	} else {
+		fmt.Printf("Destination File hash matches source\n")
+		return nil
+	}
+
 }
