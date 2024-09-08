@@ -14,17 +14,19 @@ type Result struct {
 }
 
 type FileCopyJob struct {
-	SourceFile      FileInfoExtended `json:"sourcefileinfo"`
-	DestinationFile FileInfoExtended `json:"sourcefileinfo"`
-	Running         bool             `json:"jobRunning"`
-	Completed       bool             `json:"completed"`
-	TimesStarted    int64            `json:"timesStarted"`
-	ErrorStatus     error            `json:"status"`
+	SourceFile        FileInfoExtended `json:"sourcefileinfo"`
+	DestinationFile   FileInfoExtended `json:"sourcefileinfo"`
+	Running           bool             `json:"jobRunning"`
+	Completed         bool             `json:"completed"`
+	TimesStarted      int64            `json:"timesStarted"`
+	ErrorStatus       error            `json:"status"`
+	BytesWritten      int64            `json:"bytesWritten"`
+	ProgressCompleted float64          `json:"progress"`
 }
 
 type IFileCopyJob interface {
 	GetCopyProgressPercentStr() string
-	GetCopyProgressPercentInt64() int64
+	GetCopyProgressPercent() float64
 	PrettyPrintSrc() string
 	PrettyPrintDst() string
 	CopyFile() error
@@ -43,25 +45,18 @@ func (f *FileCopyJob) PrettyPrintDst() string {
 }
 
 func (f *FileCopyJob) GetCopyProgressPercentStr() string {
-	dstlen := int64(f.DestinationFile.CheckSizeBytes())
-	srclength := int64(f.SourceFile.CheckSizeBytes())
+	progress := float64(f.BytesWritten) / float64(f.SourceFile.SizeBytes) * 100
 
-	cursizedec := dstlen / srclength
-	cursize := cursizedec * 100
-	cursizestr := fmt.Sprint(cursize, "%")
+	progressStr := fmt.Sprintf("Current Progress: %.2f%%\n", progress)
 
-	return cursizestr
+	return progressStr
 
 }
 
-func (f *FileCopyJob) GetCopyProgressPercentInt64() int64 {
-	dstlen := int64(f.DestinationFile.CheckSizeBytes())
-	srclength := int64(f.SourceFile.CheckSizeBytes())
+func (f *FileCopyJob) GetCopyProgressPercentInt64() float64 {
+	progress := float64(f.BytesWritten) / float64(f.SourceFile.SizeBytes) * 100
 
-	cursizedec := dstlen / srclength
-	cursize := cursizedec * 100
-
-	return cursize
+	return progress
 
 }
 
@@ -100,9 +95,11 @@ func (f *FileCopyJob) CopyFile() error {
 			}
 			totalBytesCopied += int64(written)
 
+			f.BytesWritten = totalBytesCopied
 			// Periodically update progress
 			progress := float64(totalBytesCopied) / float64(srcSize) * 100
-			fmt.Printf("Current Progress: %.2f%%\n", progress)
+			f.ProgressCompleted = progress
+
 		}
 
 		if readErr == io.EOF {
@@ -169,7 +166,7 @@ func (f *FileCopyJob) Start() error {
 			return err
 		case <-time.After(5 * time.Second):
 			// Periodically print progress
-			fmt.Printf("Current Progress: %s\n", f.GetCopyProgressPercentStr())
+			fmt.Printf("%s\n", f.GetCopyProgressPercentStr())
 		}
 	}
 }
