@@ -1,8 +1,10 @@
 package main
 
 import (
+	"crypto/sha256"
 	"errors"
 	"fmt"
+	"io"
 	"io/fs"
 	"os"
 )
@@ -13,6 +15,7 @@ type FileInfoExtended struct {
 	IsDirectory bool        `json:"isDirectory"`
 	FileExists  bool        `json:"files_exists"`
 	SizeBytes   float64     `json:"sizeBytes"`
+	FileHash    string      `json:"fileHash"`
 }
 
 type CopyJobFile interface {
@@ -26,6 +29,8 @@ type CopyJobFile interface {
 	PrettyStringSizeKB() string
 	PrettyStringSizeMB() string
 	PrettyStringSizeGB() string
+	CalculateFileHash() (string, error)
+	GetFileHash() string
 }
 
 func (f *FileInfoExtended) PrettyStringSizeBytes() string {
@@ -118,4 +123,29 @@ func (f *FileInfoExtended) CheckSizeBytes() float64 {
 	f.GetFileInfo()
 
 	return f.SizeBytes
+}
+
+func (f *FileInfoExtended) CalculateFileHash() (string, error) {
+	file, err := os.Open(f.path)
+	if err != nil {
+		return "", fmt.Errorf("error opening file for hashing: %v", err)
+	}
+	defer file.Close()
+
+	hash := sha256.New()
+	if _, err := io.Copy(hash, file); err != nil {
+		return "", fmt.Errorf("error calculating file hash: %v", err)
+	}
+
+	f.FileHash, err = fmt.Sprintf("%x", hash.Sum(nil)), nil
+
+	return f.FileHash, err
+}
+
+func (f *FileInfoExtended) GetFileHash() string {
+	if f.FileHash == "" {
+		f.CalculateFileHash()
+	}
+
+	return f.FileHash
 }

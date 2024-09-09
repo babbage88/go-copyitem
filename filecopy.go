@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/sha256"
 	"fmt"
 	"io"
 	"os"
@@ -32,6 +31,7 @@ type IFileCopyJob interface {
 	CopyFile() error
 	Start() error
 	VerifyDstHash() error
+	UpdateProgressBar()
 }
 
 func (f *FileCopyJob) PrettyPrintSrc() string {
@@ -155,7 +155,8 @@ func (f *FileCopyJob) Start() error {
 			case <-boolCompletedChan:
 				return
 			case <-ticker.C:
-				fmt.Printf("%s\n", f.GetCopyProgressPercentStr())
+				//fmt.Printf("%s\n", f.GetCopyProgressPercentStr())
+				f.UpdateProgressBar()
 			}
 		}
 	}()
@@ -166,8 +167,9 @@ func (f *FileCopyJob) Start() error {
 		case <-boolCompletedChan:
 			// File copy completed successfully
 			fmt.Println("File copy completed.")
+			err := f.VerifyDstHash()
 			wg.Wait()
-			return nil
+			return err
 		case err := <-errCh:
 			// Return the error if one occurs
 			fmt.Printf("Error encountered: %v\n", err)
@@ -175,42 +177,37 @@ func (f *FileCopyJob) Start() error {
 			return err
 		case <-time.After(15 * time.Second):
 			// Periodically print which files are being copied.
-			fmt.Printf("Test src: %s dst: %s\n", f.PrettyPrintSrc(), f.PrettyPrintDst())
+			//fmt.Printf("Test src: %s dst: %s\n", f.PrettyPrintSrc(), f.PrettyPrintDst())
 		}
 	}
 }
 
 func (f *FileCopyJob) VerifyDstHash() error {
-	src, err := os.Open(f.SourceFile.path)
-
+	fmt.Printf("Verifying Destination file Hash matches Source File")
+	srcHash, err := f.SourceFile.CalculateFileHash()
 	if err != nil {
-		fmt.Errorf("Error Operning %s", src)
+		return err
 	}
-	defer src.Close()
 
-	dst, err := os.Open(f.DestinationFile.path)
-
+	dstHash, err := f.DestinationFile.CalculateFileHash()
 	if err != nil {
-		fmt.Errorf("Error Operning %s", dst)
-	}
-	defer src.Close()
-
-	srcHash := sha256.New()
-	if _, err := io.Copy(srcHash, src); err != nil {
-		fmt.Errorf("Error Hashing file %s", src)
+		return err
 	}
 
-	dstHash := sha256.New()
-	if _, err := io.Copy(dstHash, src); err != nil {
-		fmt.Errorf("Error Hashing file %s", dst)
-	}
-
-	if srcHash != dstHash {
-		retVal := fmt.Errorf("Hashes dot match src: %s dst: %s", src, dst)
-		return retVal
+	if dstHash != srcHash {
+		return fmt.Errorf("file hash mismatch: source and destination files are different")
 	} else {
-		fmt.Printf("Destination File hash matches source\n")
+		fmt.Printf("File Hashes Match\n")
+		fmt.Printf("Source File: %s\n", f.PrettyPrintSrc())
+		fmt.Printf("Source Hash: %s\n", f.SourceFile.FileHash)
+		fmt.Printf("Destination File: %s\n", f.PrettyPrintDst())
+		fmt.Printf("Destination Hash: %s\n", f.DestinationFile.FileHash)
+
 		return nil
 	}
 
+}
+
+func (f *FileCopyJob) UpdateProgressBar() {
+	DrawProgressBar(f.ProgressCompleted, 50)
 }
