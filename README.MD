@@ -55,18 +55,15 @@ Call the GoCopy-Item.exe and specifiy the source file with --source and destinat
 
 ```
 PS C:\Users\babbage88\AppData\Local\Temp> & GoCopy-Item.exe --source Z:\test.mkv --destination C:\Users\babbage88\AppData\Local\Temp\test.mkv
-Destination Path: C:\Users\babbage88\AppData\Local\Temp\test.mkv
-File: C:\Users\babbage88\AppData\Local\Temp\test.mkv does not exist
-File: C:\Users\babbage88\AppData\Local\Temp\test.mkv does not exist
 size of Z:\test.mkv is 1559.62
-Destination file C:\Users\babbage88\AppData\Local\Temp\test.mkv size is 0.00
+Destination file C:\Users\babbage88\AppData\Local\Temp\test.mkv size is 0.00 MB
+
 Starting Copy Job
 Source File: Z:\test.mkv
 Destination File: C:\Users\babbage88\AppData\Local\Temp\test.mkv
 Starting File Copy Job src: Z:\test.mkv
 dst: C:\Users\babbage88\AppData\Local\Temp\test.mkv
 size_kb: 1597055.84
-[#########-----------------------------------------] 18.98%
 ```
 
 ## OS

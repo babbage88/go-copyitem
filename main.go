@@ -16,7 +16,6 @@ func main() {
 
 	srcfileinfo.path = *source
 	dstfileinfo.path = *destination
-	fmt.Printf("Destination Path: %s\n", dstfileinfo.path)
 
 	srcfileinfo.GetFileInfo()
 	dstfileinfo.GetFileInfo()
@@ -28,7 +27,7 @@ func main() {
 	dstsize := filecopyjob.DestinationFile.GetSizeInMB()
 
 	fmt.Printf("size of %s is %.2f\n", filecopyjob.PrettyPrintSrc(), sizehumanread)
-	fmt.Printf("Destination file %s size is %.2f\n", filecopyjob.PrettyPrintDst(), dstsize)
+	fmt.Printf("Destination file %s size is %.2f MB\n\n", filecopyjob.PrettyPrintDst(), dstsize)
 
 	filecopyjob.Start()
 
