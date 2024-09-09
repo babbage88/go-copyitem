@@ -64,6 +64,7 @@ Destination File: C:\Users\babbage88\AppData\Local\Temp\test.mkv
 Starting File Copy Job src: Z:\test.mkv
 dst: C:\Users\babbage88\AppData\Local\Temp\test.mkv
 size_kb: 1597055.84
+[#################################################-] 99.25%
 ```
 
 ## OS
