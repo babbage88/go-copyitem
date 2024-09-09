@@ -166,10 +166,10 @@ func (f *FileCopyJob) Start() error {
 		select {
 		case <-boolCompletedChan:
 			// File copy completed successfully
+			f.UpdateProgressBar()
 			fmt.Println("File copy completed.")
-			err := f.VerifyDstHash()
 			wg.Wait()
-			return err
+			return nil
 		case err := <-errCh:
 			// Return the error if one occurs
 			fmt.Printf("Error encountered: %v\n", err)
@@ -209,5 +209,9 @@ func (f *FileCopyJob) VerifyDstHash() error {
 }
 
 func (f *FileCopyJob) UpdateProgressBar() {
+	if f.Completed {
+		DrawProgressBar(100, 50)
+	}
+
 	DrawProgressBar(f.ProgressCompleted, 50)
 }
