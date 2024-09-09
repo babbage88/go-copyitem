@@ -153,6 +153,7 @@ func (f *FileCopyJob) Start() error {
 		for {
 			select {
 			case <-boolCompletedChan:
+				f.UpdateProgressBar()
 				return
 			case <-ticker.C:
 				//fmt.Printf("%s\n", f.GetCopyProgressPercentStr())
@@ -166,7 +167,6 @@ func (f *FileCopyJob) Start() error {
 		select {
 		case <-boolCompletedChan:
 			// File copy completed successfully
-			f.UpdateProgressBar()
 			fmt.Println("File copy completed.")
 			wg.Wait()
 			return nil
