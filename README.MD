@@ -55,7 +55,7 @@ Call the GoCopy-Item.exe and specifiy the source file with --source and destinat
 
 ```
 PS C:\Users\babbage88\AppData\Local\Temp> & GoCopy-Item.exe --source Z:\test.mkv --destination C:\Users\babbage88\AppData\Local\Temp\test.mkv
-size of Z:\test.mkv is 1559.62 MB
+Source File Z:\test.mkv size is 1559.62 MB
 Destination file C:\Users\babbage88\AppData\Local\Temp\test.mkv size is 0.00 MB
 
 Starting Copy Job
