@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"log/slog"
 	"os"
 )
 
@@ -91,10 +92,10 @@ func (f *FileInfoExtended) GetFileInfo() error {
 
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
+			slog.Debug("File does not exist", slog.String("File", f.path))
 			f.FileExists = false
 			f.IsDirectory = false
 			f.SizeBytes = float64(0.0)
-			fmt.Printf("File: %s does not exist\n", f.path)
 		} else {
 			fmt.Printf("Error when trying to Stat source file: %s\n", f.path)
 		}
