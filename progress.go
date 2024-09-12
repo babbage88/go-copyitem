@@ -6,7 +6,7 @@ import (
 )
 
 // DrawProgressBar draws the progress bar in the console.
-func DrawProgressBar(percentage float64, barWidth int) {
+func DrawProgressBar(percentage float64, barWidth int, speed string) {
 	// Clamp the percentage value between 0 and 100
 	if percentage < 0 {
 		percentage = 0
@@ -19,7 +19,7 @@ func DrawProgressBar(percentage float64, barWidth int) {
 	emptyBars := barWidth - filledBars
 
 	// Build the progress bar string
-	progressBar := fmt.Sprintf("\r[%-*s] %.2f%%", barWidth, strings.Repeat("#", filledBars)+strings.Repeat("-", emptyBars), percentage)
+	progressBar := fmt.Sprintf("\r[%-*s] %.2f%%  %s", barWidth, strings.Repeat("#", filledBars)+strings.Repeat("-", emptyBars), percentage, speed)
 
 	// Print the progress bar in place
 	fmt.Print(progressBar)
