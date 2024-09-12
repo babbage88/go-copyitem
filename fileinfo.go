@@ -79,7 +79,7 @@ func (f *FileInfoExtended) GetSizeInMB() float64 {
 func (f *FileInfoExtended) GetSizeInGB() float64 {
 	if f.FsFileInfo == nil {
 		f.GetFileInfo()
-		return f.SizeBytes / 1048576
+		return f.SizeBytes / 1073741824
 	}
 
 	f.SizeBytes = float64(f.FsFileInfo.Size())
