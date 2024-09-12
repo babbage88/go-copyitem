@@ -14,8 +14,15 @@ type ProgressBarStats struct {
 	Width                int
 }
 
+type ProgressBarConfig struct {
+	Width              int
+	FillCharacter      string
+	RemainingCharacter string
+}
+
 type ProgressBar interface {
-	DrawProgressBar(barWidth int)
+	DrawProgressBar()
+	DrawColoredString(s string, color int) string
 }
 
 func (f *FileCopyJob) DrawProgressBar(barWidth int) {
@@ -29,15 +36,18 @@ func (f *FileCopyJob) DrawProgressBar(barWidth int) {
 	filledBars := int(f.ProgressCompleted * float64(barWidth) / 100.0)
 	emptyBars := barWidth - filledBars
 
+	fillChar := f.DrawColoredString("#", 92)
+	pctRemaingChar := f.DrawColoredString("-", 96)
+
 	// Print the progress bar in place
-	fmt.Printf("\r[%-*s] %.2f%%", barWidth, strings.Repeat("#", filledBars)+strings.Repeat("-", emptyBars), f.ProgressCompleted)
+	fmt.Printf("\r[%-*s] %.2f%%", barWidth, strings.Repeat(fillChar, filledBars)+strings.Repeat(pctRemaingChar, emptyBars), f.ProgressCompleted)
 
 	// Move the cursor down one line, print speed, then move cursor back up
 	fmt.Printf("\nSpeed: %s", f.PrettyPrintSpeedMB())
 	fmt.Printf("\033[1A")
 }
 
-func DrawColoredString(s string, color int) string {
+func (f *FileCopyJob) DrawColoredString(s string, color int) string {
 	coloredString := fmt.Sprintf("\x1b[%dm%s\x1b[0m", color, s)
 	return coloredString
 }

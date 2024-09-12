@@ -13,16 +13,17 @@ type Result struct {
 }
 
 type FileCopyJob struct {
-	SourceFile        FileInfoExtended `json:"sourcefileinfo"`
-	DestinationFile   FileInfoExtended `json:"sourcefileinfo"`
-	Running           bool             `json:"jobRunning"`
-	Completed         bool             `json:"completed"`
-	TimesStarted      int64            `json:"timesStarted"`
-	ErrorStatus       error            `json:"status"`
-	BytesWritten      int64            `json:"bytesWritten"`
-	ProgressCompleted float64          `json:"progress"`
-	TransferSpeed     float64          `json:"speed"`
-	TransferSpeedMap  map[int]float64  `json:"speed_map"`
+	SourceFile        FileInfoExtended  `json:"sourcefileinfo"`
+	DestinationFile   FileInfoExtended  `json:"sourcefileinfo"`
+	Running           bool              `json:"jobRunning"`
+	Completed         bool              `json:"completed"`
+	TimesStarted      int64             `json:"timesStarted"`
+	ErrorStatus       error             `json:"status"`
+	BytesWritten      int64             `json:"bytesWritten"`
+	ProgressCompleted float64           `json:"progress"`
+	TransferSpeed     float64           `json:"speed"`
+	TransferSpeedMap  map[int]float64   `json:"speed_map"`
+	ProgressBarConfig ProgressBarConfig `json:"progressBarConf"`
 }
 
 type IFileCopyJob interface {
