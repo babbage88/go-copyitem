@@ -34,7 +34,6 @@ type IFileCopyJob interface {
 	CopyFile() error
 	Start() error
 	VerifyDstHash() error
-	UpdateProgressBar()
 	TransferSpeedKB() float64
 	TransferSpeedMB() float64
 	TransferSpeedGB() float64
@@ -166,11 +165,11 @@ func (f *FileCopyJob) Start() error {
 		for {
 			select {
 			case <-boolCompletedChan:
-				f.UpdateProgressBar()
+				f.DrawProgressBar()
 				return
 			case <-ticker.C:
 				//fmt.Printf("%s\n", f.GetCopyProgressPercentStr())
-				f.UpdateProgressBar()
+				f.DrawProgressBar()
 			}
 		}
 	}()
@@ -219,12 +218,4 @@ func (f *FileCopyJob) VerifyDstHash() error {
 		return nil
 	}
 
-}
-
-func (f *FileCopyJob) UpdateProgressBar() {
-	if f.Completed {
-		DrawProgressBar(100, 50, f.PrettyPrintSpeedMB())
-	}
-
-	DrawProgressBar(f.ProgressCompleted, 50, f.PrettyPrintSpeedMB())
 }

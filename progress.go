@@ -25,7 +25,7 @@ type ProgressBar interface {
 	DrawColoredString(s string, color int) string
 }
 
-func (f *FileCopyJob) DrawProgressBar(barWidth int) {
+func (f *FileCopyJob) DrawProgressBar() {
 	if f.ProgressCompleted < 0 {
 		f.ProgressCompleted = 0
 	} else if f.ProgressCompleted > 100 {
@@ -33,14 +33,14 @@ func (f *FileCopyJob) DrawProgressBar(barWidth int) {
 	}
 
 	// Calculate the number of "#" and "-" symbols to display
-	filledBars := int(f.ProgressCompleted * float64(barWidth) / 100.0)
-	emptyBars := barWidth - filledBars
+	filledBars := int(f.ProgressCompleted * float64(f.ProgressBarConfig.Width) / 100.0)
+	emptyBars := f.ProgressBarConfig.Width - filledBars
 
 	fillChar := f.DrawColoredString("#", 92)
 	pctRemaingChar := f.DrawColoredString("-", 96)
 
 	// Print the progress bar in place
-	fmt.Printf("\r[%-*s] %.2f%%", barWidth, strings.Repeat(fillChar, filledBars)+strings.Repeat(pctRemaingChar, emptyBars), f.ProgressCompleted)
+	fmt.Printf("\r[%-*s] %.2f%%", f.ProgressBarConfig.Width, strings.Repeat(fillChar, filledBars)+strings.Repeat(pctRemaingChar, emptyBars), f.ProgressCompleted)
 
 	// Move the cursor down one line, print speed, then move cursor back up
 	fmt.Printf("\nSpeed: %s", f.PrettyPrintSpeedMB())

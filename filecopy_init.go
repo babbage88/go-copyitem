@@ -66,9 +66,11 @@ func WithProgressBarConfig(p ProgressBarConfig) FileCopyJobOptions {
 
 func NewFileCopyJob(opts ...FileCopyJobOptions) *FileCopyJob {
 	fileCopyJob := &FileCopyJob{}
+
 	fillChar := fileCopyJob.DrawColoredString("#", 92)
 	remChar := fileCopyJob.DrawColoredString("-", 96)
-	NewCopyJobProgressBarConfig(50, fillChar, remChar)
+	fileCopyJob.ProgressBarConfig = NewCopyJobProgressBarConfig(50, fillChar, remChar)
+
 	for _, opt := range opts {
 		opt(fileCopyJob)
 	}
