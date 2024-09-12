@@ -225,5 +225,5 @@ func (f *FileCopyJob) UpdateProgressBar() {
 		DrawProgressBar(100, 50, f.PrettyPrintSpeedMB())
 	}
 
-	DrawProgressBar(f.ProgressCompleted, 50, f.PrettyPrintSpeedBytes())
+	DrawProgressBar(f.ProgressCompleted, 50, f.PrettyPrintSpeedMB())
 }
