@@ -10,18 +10,7 @@ func main() {
 	destination := flag.String("destination", "C:\temp", "Destination to Copy to.")
 	flag.Parse()
 
-	var srcfileinfo FileInfoExtended
-	var dstfileinfo FileInfoExtended
-	var filecopyjob FileCopyJob
-
-	srcfileinfo.path = *source
-	dstfileinfo.path = *destination
-
-	srcfileinfo.GetFileInfo()
-	dstfileinfo.GetFileInfo()
-
-	filecopyjob.SourceFile = srcfileinfo
-	filecopyjob.DestinationFile = dstfileinfo
+	filecopyjob := NewFileCopyJob(WithSourceFilePath(*source), WithDestinationFilePath(*destination))
 
 	sizehumanread := filecopyjob.SourceFile.GetSizeInMB()
 	dstsize := filecopyjob.DestinationFile.GetSizeInMB()
