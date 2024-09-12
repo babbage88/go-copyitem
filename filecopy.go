@@ -34,6 +34,9 @@ type IFileCopyJob interface {
 	Start() error
 	VerifyDstHash() error
 	UpdateProgressBar()
+	TransferSpeedKB() float64
+	TransferSpeedMB() float64
+	TransferSpeedGB() float64
 	PrettyPrintSpeedBytes() string
 	PrettyPrintSpeedKB() string
 	PrettyPrintSpeedMB() string
@@ -219,7 +222,7 @@ func (f *FileCopyJob) VerifyDstHash() error {
 
 func (f *FileCopyJob) UpdateProgressBar() {
 	if f.Completed {
-		DrawProgressBar(100, 50, f.PrettyPrintSpeedBytes())
+		DrawProgressBar(100, 50, f.PrettyPrintSpeedMB())
 	}
 
 	DrawProgressBar(f.ProgressCompleted, 50, f.PrettyPrintSpeedBytes())
