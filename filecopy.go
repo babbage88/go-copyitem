@@ -13,14 +13,17 @@ type Result struct {
 }
 
 type FileCopyJob struct {
-	SourceFile        FileInfoExtended `json:"sourcefileinfo"`
-	DestinationFile   FileInfoExtended `json:"sourcefileinfo"`
-	Running           bool             `json:"jobRunning"`
-	Completed         bool             `json:"completed"`
-	TimesStarted      int64            `json:"timesStarted"`
-	ErrorStatus       error            `json:"status"`
-	BytesWritten      int64            `json:"bytesWritten"`
-	ProgressCompleted float64          `json:"progress"`
+	SourceFile        FileInfoExtended  `json:"sourcefileinfo"`
+	DestinationFile   FileInfoExtended  `json:"sourcefileinfo"`
+	Running           bool              `json:"jobRunning"`
+	Completed         bool              `json:"completed"`
+	TimesStarted      int64             `json:"timesStarted"`
+	ErrorStatus       error             `json:"status"`
+	BytesWritten      int64             `json:"bytesWritten"`
+	ProgressCompleted float64           `json:"progress"`
+	TransferSpeed     float64           `json:"speed"`
+	TransferSpeedMap  map[int]float64   `json:"speed_map"`
+	ProgressBarConfig ProgressBarConfig `json:"progressBarConf"`
 }
 
 type IFileCopyJob interface {
@@ -31,7 +34,13 @@ type IFileCopyJob interface {
 	CopyFile() error
 	Start() error
 	VerifyDstHash() error
-	UpdateProgressBar()
+	TransferSpeedKB() float64
+	TransferSpeedMB() float64
+	TransferSpeedGB() float64
+	PrettyPrintSpeedBytes() string
+	PrettyPrintSpeedKB() string
+	PrettyPrintSpeedMB() string
+	PrettyPrintSpeedGB() string
 }
 
 func (f *FileCopyJob) PrettyPrintSrc() string {
@@ -86,13 +95,16 @@ func (f *FileCopyJob) CopyFile() error {
 	srcSize := f.SourceFile.GetSizeBytes()
 
 	for {
-		n, readErr := src.Read(buf)
-		if n > 0 {
-			written, writeErr := newfile.Write(buf[:n])
+		start := time.Now()
+		numBytesRead, readErr := src.Read(buf)
+		if numBytesRead > 0 {
+			written, writeErr := newfile.Write(buf[:numBytesRead])
 			if writeErr != nil {
 				fmt.Printf("Error writing to destination file: %s\n", f.PrettyPrintDst())
 				return writeErr
 			}
+			timeElapsed := time.Since(start)
+			f.TransferSpeed = float64(written) / timeElapsed.Seconds()
 			totalBytesCopied += int64(written)
 
 			f.BytesWritten = totalBytesCopied
@@ -153,11 +165,11 @@ func (f *FileCopyJob) Start() error {
 		for {
 			select {
 			case <-boolCompletedChan:
-				f.UpdateProgressBar()
+				f.DrawProgressBar()
 				return
 			case <-ticker.C:
 				//fmt.Printf("%s\n", f.GetCopyProgressPercentStr())
-				f.UpdateProgressBar()
+				f.DrawProgressBar()
 			}
 		}
 	}()
@@ -206,12 +218,4 @@ func (f *FileCopyJob) VerifyDstHash() error {
 		return nil
 	}
 
-}
-
-func (f *FileCopyJob) UpdateProgressBar() {
-	if f.Completed {
-		DrawProgressBar(100, 50)
-	}
-
-	DrawProgressBar(f.ProgressCompleted, 50)
 }
