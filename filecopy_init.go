@@ -23,9 +23,13 @@ func WithProgressRemaingCharacter(s string) ProgressBarConfigOptions {
 }
 
 func NewCopyJobProgressBarConfig(w int, fill string, remain string) ProgressBarConfig {
-	progressBarConf := NewCopyJobProgressBarConfig(w, fill, remain)
+	progBarConf := ProgressBarConfig{
+		Width:              w,
+		FillCharacter:      fill,
+		RemainingCharacter: remain,
+	}
 
-	return progressBarConf
+	return progBarConf
 }
 
 func WithSourceFilePath(path string) FileCopyJobOptions {
