@@ -59,12 +59,13 @@ Source File Z:\test.mkv size is 1559.62 MB
 Destination file C:\Users\babbage88\AppData\Local\Temp\test.mkv size is 0.00 MB
 
 Starting Copy Job
-Source File: Z:\test.mkv
-Destination File: C:\Users\babbage88\AppData\Local\Temp\test.mkv
-Starting File Copy Job src: Z:\test.mkv
-dst: C:\Users\babbage88\AppData\Local\Temp\test.mkv
-size_kb: 1597055.84
-[#################################################-] 99.25%
+Source File ..\..\Downloads\test.mkv size is 1559.62 MB
+Destination file Z:\test.mkv size is 0.00 MB
+
+[####################################################################################################] 100.00%
+Speed: 13.07 MB/s
+File Copy has completed.
+
 ```
 
 ## OS
