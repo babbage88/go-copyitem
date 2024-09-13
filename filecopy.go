@@ -14,8 +14,8 @@ type Result struct {
 }
 
 type FileCopyJob struct {
-	SourceFile        FileInfoExtended   `json:"sourcefileinfo"`
-	DestinationFile   FileInfoExtended   `json:"sourcefileinfo"`
+	SourceFile        *FileInfoExtended  `json:"sourcefileinfo"`
+	DestinationFile   *FileInfoExtended  `json:"sourcefileinfo"`
 	Running           bool               `json:"jobRunning"`
 	Completed         bool               `json:"completed"`
 	TimesStarted      int64              `json:"timesStarted"`
