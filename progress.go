@@ -81,12 +81,20 @@ func (f *FileCopyJob) DrawProgressBar() {
 	fillChar := f.DrawColoredString("#", 92)
 	pctRemaingChar := f.DrawColoredString("-", 96)
 
-	// Print the progress bar in place
+	// Clear the current line before drawing the progress bar
+	fmt.Printf("\r\033[K")
+
+	// Print the progress bar
 	fmt.Printf("\r[%-*s] %.2f%%", f.ProgressBarConfig.Width, strings.Repeat(fillChar, filledBars)+strings.Repeat(pctRemaingChar, emptyBars), f.ProgressCompleted)
 
-	// Move the cursor down one line, print speed, then move cursor back up
-	fmt.Printf("\n%s", f.PrettyPrintSpeedMB())
+	// Clear the next line for the speed display
+	fmt.Printf("\n\033[K")
+
+	// Print the speed in MB/s
+	fmt.Printf("%s", f.PrettyPrintSpeedMB())
+
 	if f.ProgressCompleted < 100 {
+		// , if copy still running, move cursor up to clear progress bar on the next draw
 		fmt.Printf("\033[1A")
 	} else {
 		fmt.Printf("\nFile Copy has completed.\n")
