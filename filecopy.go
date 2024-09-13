@@ -13,17 +13,17 @@ type Result struct {
 }
 
 type FileCopyJob struct {
-	SourceFile        FileInfoExtended  `json:"sourcefileinfo"`
-	DestinationFile   FileInfoExtended  `json:"sourcefileinfo"`
-	Running           bool              `json:"jobRunning"`
-	Completed         bool              `json:"completed"`
-	TimesStarted      int64             `json:"timesStarted"`
-	ErrorStatus       error             `json:"status"`
-	BytesWritten      int64             `json:"bytesWritten"`
-	ProgressCompleted float64           `json:"progress"`
-	TransferSpeed     float64           `json:"speed"`
-	TransferSpeedMap  map[int]float64   `json:"speed_map"`
-	ProgressBarConfig ProgressBarConfig `json:"progressBarConf"`
+	SourceFile        FileInfoExtended   `json:"sourcefileinfo"`
+	DestinationFile   FileInfoExtended   `json:"sourcefileinfo"`
+	Running           bool               `json:"jobRunning"`
+	Completed         bool               `json:"completed"`
+	TimesStarted      int64              `json:"timesStarted"`
+	ErrorStatus       error              `json:"status"`
+	BytesWritten      int64              `json:"bytesWritten"`
+	ProgressCompleted float64            `json:"progress"`
+	TransferSpeed     float64            `json:"speed"`
+	TransferSpeedMap  map[int]float64    `json:"speed_map"`
+	ProgressBarConfig *ProgressBarConfig `json:"progressBarConf"`
 }
 
 type IFileCopyJob interface {
@@ -123,7 +123,6 @@ func (f *FileCopyJob) CopyFile() error {
 		}
 	}
 
-	fmt.Printf("File copy completed: %s -> %s\n", f.PrettyPrintSrc(), f.PrettyPrintDst())
 	return nil
 }
 
@@ -179,7 +178,6 @@ func (f *FileCopyJob) Start() error {
 		select {
 		case <-boolCompletedChan:
 			// File copy completed successfully
-			fmt.Println("File copy completed.")
 			wg.Wait()
 			return nil
 		case err := <-errCh:

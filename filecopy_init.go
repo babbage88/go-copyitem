@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 type FileCopyJobOptions func(*FileCopyJob)
 type FileIntoExtendedOptions func(*FileInfoExtended)
 type ProgressBarConfigOptions func(*ProgressBarConfig)
@@ -22,11 +24,23 @@ func WithProgressRemaingCharacter(s string) ProgressBarConfigOptions {
 	}
 }
 
-func NewCopyJobProgressBarConfig(w int, fill string, remain string) ProgressBarConfig {
-	progBarConf := ProgressBarConfig{
-		Width:              w,
-		FillCharacter:      fill,
-		RemainingCharacter: remain,
+func (f *ProgressBarConfig) DrawColoredString(s string, color int) string {
+	coloredString := fmt.Sprintf("\x1b[%dm%s\x1b[0m", color, s)
+	return coloredString
+}
+
+func NewProgressBarConfig(opts ...ProgressBarConfigOptions) *ProgressBarConfig {
+	const (
+		width = 50
+	)
+	progBarConf := &ProgressBarConfig{Width: width}
+	progBarConf.FillCharacter = progBarConf.DrawColoredString("#", 92)
+	progBarConf.RemainingCharacter = progBarConf.DrawColoredString("-", 96)
+
+	for _, opt := range opts {
+
+		opt(progBarConf)
+
 	}
 
 	return progBarConf
@@ -62,7 +76,7 @@ func WithDestinationFile(destinationFileInfo FileInfoExtended) FileCopyJobOption
 	}
 }
 
-func WithProgressBarConfig(p ProgressBarConfig) FileCopyJobOptions {
+func WithProgressBarConfig(p *ProgressBarConfig) FileCopyJobOptions {
 	return func(f *FileCopyJob) {
 		f.ProgressBarConfig = p
 	}
@@ -70,10 +84,7 @@ func WithProgressBarConfig(p ProgressBarConfig) FileCopyJobOptions {
 
 func NewFileCopyJob(opts ...FileCopyJobOptions) *FileCopyJob {
 	fileCopyJob := &FileCopyJob{}
-
-	fillChar := fileCopyJob.DrawColoredString("#", 92)
-	remChar := fileCopyJob.DrawColoredString("-", 96)
-	fileCopyJob.ProgressBarConfig = NewCopyJobProgressBarConfig(50, fillChar, remChar)
+	fileCopyJob.ProgressBarConfig = NewProgressBarConfig()
 
 	for _, opt := range opts {
 		opt(fileCopyJob)
