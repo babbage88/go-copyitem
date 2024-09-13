@@ -62,10 +62,8 @@ Starting Copy Job
 Source File ..\..\Downloads\test.mkv size is 1559.62 MB
 Destination file Z:\test.mkv size is 0.00 MB
 
-[####################################################################################################] 100.00%
+[#######################----------------------------------------------------] 31.42%
 Speed: 13.07 MB/s
-File Copy has completed.
-
 ```
 
 ## OS
