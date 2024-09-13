@@ -25,6 +25,48 @@ type ProgressBar interface {
 	DrawColoredString(s string, color int) string
 }
 
+type ProgressBarConfigOptions func(*ProgressBarConfig)
+
+func WithProgressBarWidth(width int) ProgressBarConfigOptions {
+	return func(p *ProgressBarConfig) {
+		p.Width = width
+	}
+}
+
+func WithProgressFillCharacter(s string) ProgressBarConfigOptions {
+	return func(p *ProgressBarConfig) {
+		p.FillCharacter = s
+	}
+}
+
+func WithProgressRemaingCharacter(s string) ProgressBarConfigOptions {
+	return func(p *ProgressBarConfig) {
+		p.RemainingCharacter = s
+	}
+}
+
+func (f *ProgressBarConfig) DrawColoredString(s string, color int) string {
+	coloredString := fmt.Sprintf("\x1b[%dm%s\x1b[0m", color, s)
+	return coloredString
+}
+
+func NewProgressBarConfig(opts ...ProgressBarConfigOptions) *ProgressBarConfig {
+	const (
+		width = 50
+	)
+	progBarConf := &ProgressBarConfig{Width: width}
+	progBarConf.FillCharacter = progBarConf.DrawColoredString("#", 92)
+	progBarConf.RemainingCharacter = progBarConf.DrawColoredString("-", 96)
+
+	for _, opt := range opts {
+
+		opt(progBarConf)
+
+	}
+
+	return progBarConf
+}
+
 func (f *FileCopyJob) DrawProgressBar() {
 	if f.ProgressCompleted < 0 {
 		f.ProgressCompleted = 0
@@ -39,12 +81,25 @@ func (f *FileCopyJob) DrawProgressBar() {
 	fillChar := f.DrawColoredString("#", 92)
 	pctRemaingChar := f.DrawColoredString("-", 96)
 
-	// Print the progress bar in place
+	// Clear the current line before drawing the progress bar
+	fmt.Printf("\r\033[K")
+
+	// Print the progress bar
 	fmt.Printf("\r[%-*s] %.2f%%", f.ProgressBarConfig.Width, strings.Repeat(fillChar, filledBars)+strings.Repeat(pctRemaingChar, emptyBars), f.ProgressCompleted)
 
-	// Move the cursor down one line, print speed, then move cursor back up
-	fmt.Printf("\nSpeed: %s", f.PrettyPrintSpeedMB())
-	fmt.Printf("\033[1A")
+	// Clear the next line for the speed display
+	fmt.Printf("\n\033[K")
+
+	// Print the speed in MB/s
+	fmt.Printf("%s", f.PrettyPrintSpeedMB())
+
+	if f.ProgressCompleted < 100 {
+		// , if copy still running, move cursor up to clear progress bar on the next draw
+		fmt.Printf("\033[1A")
+	} else {
+		fmt.Printf("\nFile Copy has completed.\n")
+	}
+
 }
 
 func (f *FileCopyJob) DrawColoredString(s string, color int) string {

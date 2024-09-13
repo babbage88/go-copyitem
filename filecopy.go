@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"log/slog"
 	"os"
 	"sync"
 	"time"
@@ -13,17 +14,17 @@ type Result struct {
 }
 
 type FileCopyJob struct {
-	SourceFile        FileInfoExtended  `json:"sourcefileinfo"`
-	DestinationFile   FileInfoExtended  `json:"sourcefileinfo"`
-	Running           bool              `json:"jobRunning"`
-	Completed         bool              `json:"completed"`
-	TimesStarted      int64             `json:"timesStarted"`
-	ErrorStatus       error             `json:"status"`
-	BytesWritten      int64             `json:"bytesWritten"`
-	ProgressCompleted float64           `json:"progress"`
-	TransferSpeed     float64           `json:"speed"`
-	TransferSpeedMap  map[int]float64   `json:"speed_map"`
-	ProgressBarConfig ProgressBarConfig `json:"progressBarConf"`
+	SourceFile        *FileInfoExtended  `json:"sourcefileinfo"`
+	DestinationFile   *FileInfoExtended  `json:"sourcefileinfo"`
+	Running           bool               `json:"jobRunning"`
+	Completed         bool               `json:"completed"`
+	TimesStarted      int64              `json:"timesStarted"`
+	ErrorStatus       error              `json:"status"`
+	BytesWritten      int64              `json:"bytesWritten"`
+	ProgressCompleted float64            `json:"progress"`
+	TransferSpeed     float64            `json:"speed"`
+	TransferSpeedMap  map[int]float64    `json:"speed_map"`
+	ProgressBarConfig *ProgressBarConfig `json:"progressBarConf"`
 }
 
 type IFileCopyJob interface {
@@ -41,6 +42,7 @@ type IFileCopyJob interface {
 	PrettyPrintSpeedKB() string
 	PrettyPrintSpeedMB() string
 	PrettyPrintSpeedGB() string
+	PrettyPrintCopyJobFileInfo(b bool)
 }
 
 func (f *FileCopyJob) PrettyPrintSrc() string {
@@ -70,7 +72,7 @@ func (f *FileCopyJob) GetCopyProgressPercentInt64() float64 {
 }
 
 func (f *FileCopyJob) CopyFile() error {
-	fmt.Printf("Starting File Copy Job src: %s\ndst: %s\nsize_kb: %s\n", f.SourceFile.path, f.DestinationFile.path, f.SourceFile.PrettyStringSizeKB())
+	slog.Debug("CopyFile Started", slog.String("Source", f.SourceFile.path), slog.String("Destination", f.DestinationFile.path))
 	src, err := os.Open(f.SourceFile.path)
 	if err != nil {
 		fmt.Printf("Error Opening source file %s\n", f.PrettyPrintSrc())
@@ -123,17 +125,21 @@ func (f *FileCopyJob) CopyFile() error {
 		}
 	}
 
-	fmt.Printf("File copy completed: %s -> %s\n", f.PrettyPrintSrc(), f.PrettyPrintDst())
 	return nil
+}
+
+func (f *FileCopyJob) PrettyPrintCopyFileInfo(b bool) {
+	if b {
+		fmt.Printf("\nStarting Copy Job\n")
+		fmt.Printf("Source File %s size is %.2f MB\n", f.PrettyPrintSrc(), f.SourceFile.GetSizeInMB())
+		fmt.Printf("Destination file %s size is %.2f MB\n\n", f.PrettyPrintDst(), f.DestinationFile.GetSizeInMB())
+	}
 }
 
 func (f *FileCopyJob) Start() error {
 	f.TimesStarted += 1
 	f.Running = true
-	fmt.Printf("Starting Copy Job\n")
-	fmt.Printf("Source File: %s\n", f.PrettyPrintSrc())
-	fmt.Printf("Destination File: %s\n", f.PrettyPrintDst())
-
+	f.PrettyPrintCopyFileInfo(f.Running)
 	wg := new(sync.WaitGroup)
 	wg.Add(2)
 
@@ -179,7 +185,6 @@ func (f *FileCopyJob) Start() error {
 		select {
 		case <-boolCompletedChan:
 			// File copy completed successfully
-			fmt.Println("File copy completed.")
 			wg.Wait()
 			return nil
 		case err := <-errCh:
