@@ -85,8 +85,13 @@ func (f *FileCopyJob) DrawProgressBar() {
 	fmt.Printf("\r[%-*s] %.2f%%", f.ProgressBarConfig.Width, strings.Repeat(fillChar, filledBars)+strings.Repeat(pctRemaingChar, emptyBars), f.ProgressCompleted)
 
 	// Move the cursor down one line, print speed, then move cursor back up
-	fmt.Printf("\nSpeed: %s", f.PrettyPrintSpeedMB())
-	fmt.Printf("\033[1A")
+	fmt.Printf("\n%s", f.PrettyPrintSpeedMB())
+	if f.ProgressCompleted < 100 {
+		fmt.Printf("\033[1A")
+	} else {
+		fmt.Printf("\nFile Copy has completed.\n")
+	}
+
 }
 
 func (f *FileCopyJob) DrawColoredString(s string, color int) string {
