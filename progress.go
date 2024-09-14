@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"strings"
 	"time"
 )
@@ -97,7 +98,8 @@ func (f *FileCopyJob) DrawProgressBar() {
 		// , if copy still running, move cursor up to clear progress bar on the next draw
 		fmt.Printf("\033[1A")
 	} else {
-		fmt.Printf("\nFile Copy has completed.\n")
+		fmt.Printf("\n")
+		log.Printf("File Copy has completed.\n")
 	}
 
 }

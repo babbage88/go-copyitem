@@ -2,15 +2,55 @@ package main
 
 import (
 	"log"
+	"path/filepath"
 	"time"
 
 	"github.com/urfave/cli/v2"
 )
 
+func (f *FileCopyJob) ParsePathParams() error {
+	_, srcFile := filepath.Split(f.SourceFile.path)
+
+	if f.DestinationFile.IsDirectory {
+		if !f.SourceFile.IsDirectory {
+			f.DestinationFile.path = filepath.Join(f.DestinationFile.path, srcFile)
+
+			log.Printf("No filename specified for destination. Using Source filename: %s\n", f.DrawColoredString(srcFile, 96))
+			log.Printf("Destination file to be Created: %s\n", f.PrettyPrintDst())
+
+		} else if f.SourceFile.IsDirectory {
+			log.Println("Source needs to be a file.")
+			log.Println("Need to implement support for copying one directory to another.")
+		}
+
+		return nil
+	}
+	return nil
+}
+
+func (f FileInfoExtended) PrettyPrintSizeString() string {
+	size := int(f.SizeBytes)
+
+	if size < 1024 {
+		return f.PrettyStringSizeBytes()
+	} else if size >= 1<<10 {
+		return f.PrettyStringSizeKB()
+	} else if size < 1048576 {
+		return f.PrettyStringSizeMB()
+	} else if size < 1073741824 {
+		return f.PrettyStringSizeGB()
+	}
+
+	return f.PrettyStringSizeBytes()
+}
+
 func cmdCopyFileJob(src string, dst string, w int) {
+
 	progressBarConfig := NewProgressBarConfig(WithProgressBarWidth(w))
 
 	filecopyjob := NewFileCopyJob(WithSourceFilePath(src), WithDestinationFilePath(dst), WithProgressBarConfig(progressBarConfig))
+
+	filecopyjob.ParsePathParams()
 
 	filecopyjob.Start()
 }
@@ -32,12 +72,12 @@ func CopyJobCommand() (appInst *cli.App) {
 			&cli.StringFlag{
 				Name:    "source",
 				Aliases: []string{"s"},
-				Usage:   "The source file to be copied",
+				Usage:   "The source file to be copied. Needs to be a file, not a directory.",
 			},
 			&cli.StringFlag{
 				Name:    "destination",
 				Aliases: []string{"d"},
-				Usage:   "The destination file to be copied",
+				Usage:   "The destination file to be created or directory to copy to.",
 			},
 			&cli.IntFlag{
 				Name:    "width",
