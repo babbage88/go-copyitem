@@ -2,29 +2,25 @@
 compdef _cpgo cpgo
 
 _cpgo() {
-    local -a opts
-    local cur
-    cur=${words[-1]}
+    local state
+    local curcontext="$curcontext" line
+    typeset -A opt_args
 
-    # Define possible options for cpgo
-    opts=(
-        '--source:-s:Source file:_files'  # Completes file paths for --source or -s
-        '--destination:-d:Destination file:_files'  # Completes file paths for --destination or -d
-        '--width:-w:Specify width (e.g. 100):_values "width" 50 75 100 150'  # Suggests width values
-        '--help:Show help message'
-    )
+    # Available options
+    _arguments -C \
+        '--source=-[Source file]:file:_files' \
+        '-s[Source file]:file:_files' \
+        '--destination=-[Destination file]:file:_files' \
+        '-d[Destination file]:file:_files' \
+        '--width=-[Specify width]:width:(100 200 300 400)' \
+        '-w[Specify width]:width:(100 200 300 400)' \
+        '--help[Show help message]' \
+        '--version[Show Build Version]'
 
-    # File path completion for source and destination
-    if [[ "$cur" == --source=* || "$cur" == -s=* ]]; then
-        _files
-        return
-    elif [[ "$cur" == --destination=* || "$cur" == -d=* ]]; then
-        _files
-        return
+    # First argument autocompletion (file path or option)
+    if (( CURRENT == 2 )); then
+        _files && return
     fi
-
-    # Use the Zsh _describe helper to provide autocompletion suggestions
-    _describe 'values' opts
 }
 
 # Don't run the completion function when being source-ed or eval-ed
