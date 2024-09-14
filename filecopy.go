@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"log"
 	"log/slog"
 	"os"
 	"sync"
@@ -25,6 +26,8 @@ type FileCopyJob struct {
 	TransferSpeed     float64            `json:"speed"`
 	TransferSpeedMap  map[int]float64    `json:"speed_map"`
 	ProgressBarConfig *ProgressBarConfig `json:"progressBarConf"`
+	SrcColor          int                `json:"srcColor"`
+	DstColor          int                `json:"dstColor"`
 }
 
 type IFileCopyJob interface {
@@ -43,6 +46,7 @@ type IFileCopyJob interface {
 	PrettyPrintSpeedMB() string
 	PrettyPrintSpeedGB() string
 	PrettyPrintCopyJobFileInfo(b bool)
+	ParsePathParams() error
 }
 
 func (f *FileCopyJob) PrettyPrintSrc() string {
@@ -130,9 +134,10 @@ func (f *FileCopyJob) CopyFile() error {
 
 func (f *FileCopyJob) PrettyPrintCopyFileInfo(b bool) {
 	if b {
-		fmt.Printf("\nStarting Copy Job\n")
-		fmt.Printf("Source File %s size is %.2f MB\n", f.PrettyPrintSrc(), f.SourceFile.GetSizeInMB())
-		fmt.Printf("Destination file %s size is %.2f MB\n\n", f.PrettyPrintDst(), f.DestinationFile.GetSizeInMB())
+		fmt.Printf("\n\n")
+		log.Printf("Staring Copy Job.\n")
+		fmt.Printf("Source File %s size is %s\n", f.PrettyPrintSrc(), f.SourceFile.PrettyPrintSizeString())
+		fmt.Printf("Destination file %s size is %s\n\n", f.PrettyPrintDst(), f.DestinationFile.PrettyPrintSizeString())
 	}
 }
 
