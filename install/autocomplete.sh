@@ -1,13 +1,13 @@
-#compdef go-cp
-compdef _go-cp go-cp
+#compdef cpgo
+compdef _cpgo cpgo
 
-# Replace all occurrences of "go-cp" in this file with the actual name of your
-# CLI go-cp. We recommend using Find+Replace feature of your editor. Let's say
-# your CLI go-cp is called "acme", then replace like so:
-# * go-cp => acme
-# * _go-cp => _acme
+# Replace all occurrences of "cpgo" in this file with the actual name of your
+# CLI cpgo. We recommend using Find+Replace feature of your editor. Let's say
+# your CLI cpgo is called "acme", then replace like so:
+# * cpgo => acme
+# * _cpgo => _acme
 
-_go-cp() {
+_cpgo() {
 	local -a opts
 	local cur
 	cur=${words[-1]}
@@ -25,6 +25,6 @@ _go-cp() {
 }
 
 # don't run the completion function when being source-ed or eval-ed
-if [ "$funcstack[1]" = "_go-cp" ]; then
-	_go-cp
+if [ "$funcstack[1]" = "_cpgo" ]; then
+	_cpgo
 fi
