@@ -3,36 +3,10 @@ package main
 import (
 	"log"
 	"path/filepath"
-	"runtime"
 	"time"
 
 	"github.com/urfave/cli/v2"
 )
-
-func testDev(src string, dst string, w int) {
-	if runtime.GOOS == "windows" {
-		log.Println("Hello from Windows")
-	}
-	srcPath, srcFile := filepath.Split(src)
-	dstPath, dstFile := filepath.Split(dst)
-	log.Printf("src: %s srcDir: %s srcFile: %s\n", src, srcPath, srcFile)
-	log.Printf("dst: %s dstDir: %s dstFile: %s\n", dst, dstPath, dstFile)
-	progressBarConfig := NewProgressBarConfig(WithProgressBarWidth(w))
-
-	filecopyjob := NewFileCopyJob(WithSourceFilePath(src), WithDestinationFilePath(dst), WithProgressBarConfig(progressBarConfig))
-
-	if filecopyjob.DestinationFile.IsDirectory {
-		if !filecopyjob.SourceFile.IsDirectory {
-			log.Printf("src is a File: %s\n", src)
-			filecopyjob.DestinationFile.path = filepath.Join(dst, srcFile)
-			testC := filecopyjob.PrettyPrintDst()
-			log.Printf("New dst: %s\n", testC)
-
-		}
-		log.Printf("The specified dst: %s  is a directory\n", dst)
-		return
-	}
-}
 
 func (f *FileCopyJob) ParsePathParams() error {
 	_, srcFile := filepath.Split(f.SourceFile.path)
@@ -108,18 +82,8 @@ func CopyJobCommand() (appInst *cli.App) {
 				Value:   75,
 				Usage:   "Width of the Progress Bar that gets drawn",
 			},
-			&cli.BoolFlag{
-				Name:    "test",
-				Aliases: []string{"tst"},
-				Value:   false,
-				Usage:   "Used for testing/development",
-			},
 		},
 		Action: func(cCtx *cli.Context) (err error) {
-			if cCtx.Bool("test") {
-				testDev(cCtx.String("source"), cCtx.String("destination"), cCtx.Int("width"))
-				return nil
-			}
 			if cCtx.NArg() == 0 {
 				cmdCopyFileJob(cCtx.String("source"), cCtx.String("destination"), cCtx.Int("width"))
 				return nil
