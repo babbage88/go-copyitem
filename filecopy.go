@@ -50,12 +50,12 @@ type IFileCopyJob interface {
 }
 
 func (f *FileCopyJob) PrettyPrintSrc() string {
-	coloredsource := fmt.Sprintf("\x1b[%dm%s\x1b[0m", 96, f.SourceFile.path)
+	coloredsource := fmt.Sprintf("\x1b[%dm%s\x1b[0m", f.SrcColor, f.SourceFile.path)
 	return coloredsource
 }
 
 func (f *FileCopyJob) PrettyPrintDst() string {
-	colordestination := fmt.Sprintf("\x1b[%dm%s\x1b[0m", 92, f.DestinationFile.path)
+	colordestination := fmt.Sprintf("\x1b[%dm%s\x1b[0m", f.DstColor, f.DestinationFile.path)
 	return colordestination
 }
 
