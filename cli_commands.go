@@ -20,6 +20,7 @@ func CopyJobCommand() (appInst *cli.App) {
 		Name:                 "gocp",
 		Version:              "1.0.2",
 		Compiled:             time.Now(),
+		Args:                 true,
 		EnableBashCompletion: true,
 		Authors: []*cli.Author{
 			{
@@ -46,13 +47,12 @@ func CopyJobCommand() (appInst *cli.App) {
 			},
 		},
 		Action: func(cCtx *cli.Context) (err error) {
-			log.Println("Starting CopyFileJob Command")
 			if cCtx.NArg() == 0 {
-				log.Fatal("No CLI arguments detected!\n Please specify source and destination")
+				cmdCopyFileJob(cCtx.String("source"), cCtx.String("destination"), cCtx.Int("width"))
 			}
 			log.Printf("args: %+v", cCtx.Args())
 
-			cmdCopyFileJob(cCtx.String("source"), cCtx.String("destination"), cCtx.Int("width"))
+			cmdCopyFileJob(cCtx.Args().Get(0), cCtx.Args().Get(1), cCtx.Int("width"))
 			return nil
 		},
 	}
