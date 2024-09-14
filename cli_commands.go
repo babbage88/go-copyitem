@@ -49,6 +49,7 @@ func CopyJobCommand() (appInst *cli.App) {
 		Action: func(cCtx *cli.Context) (err error) {
 			if cCtx.NArg() == 0 {
 				cmdCopyFileJob(cCtx.String("source"), cCtx.String("destination"), cCtx.Int("width"))
+				return nil
 			}
 			log.Printf("args: %+v", cCtx.Args())
 
