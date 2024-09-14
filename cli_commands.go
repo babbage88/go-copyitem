@@ -16,7 +16,7 @@ func (f *FileCopyJob) ParsePathParams() error {
 			f.DestinationFile.path = filepath.Join(f.DestinationFile.path, srcFile)
 
 			log.Printf("No filename specified for destination. Using Source filename: %s\n", f.DrawColoredString(srcFile, 96))
-			log.Printf("No filename specified for destination. Using Source filename: %s\n", f.PrettyPrintDst())
+			log.Printf("Destination file to be Created: %s\n", f.PrettyPrintDst())
 
 		}
 
