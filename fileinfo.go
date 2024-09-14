@@ -35,22 +35,22 @@ type CopyJobFile interface {
 }
 
 func (f *FileInfoExtended) PrettyStringSizeBytes() string {
-	coloredsource := fmt.Sprintf("\x1b[%dm%.2f\x1b[0m", 96, f.GetSizeBytes())
+	coloredsource := fmt.Sprintf("\x1b[%dm%.2f\x1b[0m Bytes", 96, f.GetSizeBytes())
 	return coloredsource
 }
 
 func (f *FileInfoExtended) PrettyStringSizeKB() string {
-	coloredsource := fmt.Sprintf("\x1b[%dm%.2f\x1b[0m", 96, f.GetSizeInKB())
+	coloredsource := fmt.Sprintf("\x1b[%dm%.2f\x1b[0m KB", 96, f.GetSizeInKB())
 	return coloredsource
 }
 
 func (f *FileInfoExtended) PrettyStringSizeMB() string {
-	coloredsource := fmt.Sprintf("\x1b[%dm%.2f\x1b[0m", 96, f.GetSizeInMB())
+	coloredsource := fmt.Sprintf("\x1b[%dm%.2f\x1b[0m MB", 96, f.GetSizeInMB())
 	return coloredsource
 }
 
 func (f *FileInfoExtended) PrettyStringSizeGB() string {
-	coloredsource := fmt.Sprintf("\x1b[%dm%.2f\x1b[0m", 96, f.GetSizeInGB())
+	coloredsource := fmt.Sprintf("\x1b[%dm%.2f\x1b[0m GB", 96, f.GetSizeInGB())
 	return coloredsource
 }
 

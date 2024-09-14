@@ -21,6 +21,18 @@ func WithDestinationFilePath(path string) FileCopyJobOptions {
 	}
 }
 
+func WithSourceColor(i int) FileCopyJobOptions {
+	return func(copyJob *FileCopyJob) {
+		copyJob.SrcColor = i
+	}
+}
+
+func WithDestinationColor(i int) FileCopyJobOptions {
+	return func(copyJob *FileCopyJob) {
+		copyJob.DstColor = i
+	}
+}
+
 func WithSourceFile(sourceFileInfo FileInfoExtended) FileCopyJobOptions {
 	return func(f *FileCopyJob) {
 		f.SourceFile = &sourceFileInfo
@@ -40,7 +52,12 @@ func WithProgressBarConfig(p *ProgressBarConfig) FileCopyJobOptions {
 }
 
 func NewFileCopyJob(opts ...FileCopyJobOptions) *FileCopyJob {
-	fileCopyJob := &FileCopyJob{}
+	const (
+		srcColor = 96
+		dstColor = 92
+	)
+
+	fileCopyJob := &FileCopyJob{SrcColor: srcColor, DstColor: dstColor}
 	fileCopyJob.ProgressBarConfig = NewProgressBarConfig()
 
 	for _, opt := range opts {
