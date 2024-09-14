@@ -10,7 +10,7 @@ _cpgo() {
     opts=(
         '--source:-s:Source file:_files'  # Completes file paths for --source or -s
         '--destination:-d:Destination file:_files'  # Completes file paths for --destination or -d
-        '--width:-w:Specify width (e.g. 100):_values "width" 100 200 300 400'  # Suggests width values
+        '--width:-w:Specify width (e.g. 100):_values "width" 50 75 100 150'  # Suggests width values
         '--help:Show help message'
     )
 

@@ -16,7 +16,7 @@ _cpgo_completions() {
             return 0
             ;;
         --width|-w)
-            COMPREPLY=($(compgen -W "100 200 300 400" -- "$cur"))  # Suggest predefined width values
+            COMPREPLY=($(compgen -W "50 75 100 150" -- "$cur"))  # Suggest predefined width values
             return 0
             ;;
     esac
