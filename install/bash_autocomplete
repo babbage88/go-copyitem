@@ -1,0 +1,42 @@
+_cpgo_completions() {
+    local cur prev opts
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+    # Available options
+    opts="--source -s --destination -d --width -w --help"
+
+    # If we're completing the first argument (after the command itself)
+    if [[ ${COMP_CWORD} -eq 1 ]]; then
+        # Suggest files or options as the first argument
+        COMPREPLY=($(compgen -W "${opts}" -- "$cur"))  # Suggest options
+        COMPREPLY+=($(compgen -f -- "$cur"))  # Also suggest file paths
+        return 0
+    fi
+
+    # File path completion for --source and --destination
+    case "${prev}" in
+        --source|-s)
+            COMPREPLY=($(compgen -f -- "$cur"))  # Complete file paths for --source
+            return 0
+            ;;
+        --destination|-d)
+            COMPREPLY=($(compgen -f -- "$cur"))  # Complete file paths for --destination
+            return 0
+            ;;
+        --width|-w)
+            COMPREPLY=($(compgen -W "100 200 300 400" -- "$cur"))  # Suggest predefined width values
+            return 0
+            ;;
+    esac
+
+    # Default completion for options
+    if [[ "${cur}" == -* ]]; then
+        COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
+    fi
+
+    return 0
+}
+
+# Register the completion function for the cpgo command
+complete -F _cpgo_completions cpgo

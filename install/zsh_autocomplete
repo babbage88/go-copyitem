@@ -1,0 +1,29 @@
+#compdef cpgo
+compdef _cpgo cpgo
+
+_cpgo() {
+    local state
+    local curcontext="$curcontext" line
+    typeset -A opt_args
+
+    # Available options
+    _arguments -C \
+        '--source=-[Source file]:file:_files' \
+        '-s[Source file]:file:_files' \
+        '--destination=-[Destination file]:file:_files' \
+        '-d[Destination file]:file:_files' \
+        '--width=-[Specify width]:width:(100 200 300 400)' \
+        '-w[Specify width]:width:(100 200 300 400)' \
+        '--help[Show help message]' \
+        '--version[Show Build Version]'
+
+    # First argument autocompletion (file path or option)
+    if (( CURRENT == 2 )); then
+        _files && return
+    fi
+}
+
+# Don't run the completion function when being source-ed or eval-ed
+if [ "$funcstack[1]" = "_cpgo" ]; then
+    _cpgo
+fi
