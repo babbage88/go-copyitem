@@ -150,8 +150,8 @@ cleanup() {
 
 # Main installation logic
 main() {
-    # Install wget if needed
-    install_wget
+    # Install git and wget if needed
+    install_pre_reqs
 
     # Install or update Go if needed
     install_go
