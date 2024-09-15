@@ -115,7 +115,7 @@ install_binary() {
 # Install Bash autocompletion
 install_bash_completion() {
     echo "Installing Bash autocompletion..."
-    sudo cp "$TEMP_DIR/bash_autocomplete.sh" "$BASH_COMPLETION_DIR/$BINARY_NAME"
+    sudo cp "$TEMP_DIR/install/bash_autocomplete.sh" "$BASH_COMPLETION_DIR/$BINARY_NAME"
 
     if [[ $? -eq 0 ]]; then
         echo "Bash autocompletion installed at $BASH_COMPLETION_DIR/$BINARY_NAME"
@@ -129,7 +129,7 @@ install_bash_completion() {
 install_zsh_completion() {
     if command_exists zsh; then
         echo "Zsh is installed, installing Zsh autocompletion..."
-        sudo cp "$TEMP_DIR/zsh_autocomplete.sh" "$ZSH_COMPLETION_DIR/_$BINARY_NAME"
+        sudo cp "$TEMP_DIR/install/zsh_autocomplete.sh" "$ZSH_COMPLETION_DIR/_$BINARY_NAME"
 
         if [[ $? -eq 0 ]]; then
             echo "Zsh autocompletion installed at $ZSH_COMPLETION_DIR/_$BINARY_NAME"
